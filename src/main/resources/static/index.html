@@ -375,6 +375,43 @@
                 }
             })
         }
+
+        // 검색 기능 (추가)
+        function searchMemos() {
+            let keyword = $('#search-keyword').val().trim();
+
+            if (keyword === '') {
+                alert('검색어를 입력해주세요');
+                return;
+            }
+
+            $('#cards-box').empty();
+
+            $.ajax({
+                type: 'GET',
+                url: `/api/memos/contents?keyword=${keyword}`,
+                success: function (response) {
+                    if (response.length === 0) {
+                        $('#cards-box').append(
+                            `<div style="text-align:center; color:#868e96; padding:20px;">
+                        검색 결과가 없습니다.
+                    </div>`
+                        );
+                        return;
+                    }
+
+                    for (let i = 0; i < response.length; i++) {
+                        let message = response[i];
+                        addHTML(
+                            message.id,
+                            message.username,
+                            message.contents,
+                            message.modifiedAt
+                        );
+                    }
+                }
+            });
+        }
     </script>
 </head>
 
@@ -392,6 +429,21 @@
             공유하고 싶은 소식을 입력해주세요.
         </p>
     </div>
+    <!-- 검색 영역 (추가) -->
+    <div style="margin-bottom: 12px; display: flex; gap: 8px;">
+        <input type="text" id="search-keyword"
+               placeholder="검색어를 입력하세요"
+               style="flex:1; height:38px; border-radius:5px; border:none; padding:0 12px;">
+        <button onclick="searchMemos()"
+                style="width:90px; border:none; border-radius:5px; background:#228be6; color:white;">
+            Search
+        </button>
+        <button onclick="getMessages()"
+                style="width:110px; border:none; border-radius:5px; background:#2f9e44; color:white;">
+            Back to List
+        </button>
+    </div>
+
     <div class="area-write">
         <textarea class="field" placeholder="공유하고 싶은 소식을 입력해주세요" name="contents" id="contents" cols="30"
                   rows="10"></textarea>
